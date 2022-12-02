@@ -1,0 +1,42 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html{
+    font-size: 62.5%;
+}
+
+main{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.categories-options-container{
+    background: rgba(0, 0, 0, 0.057);
+    width: 54px;
+    position: absolute;
+}
+.categories-options-arrow{
+    width: 24px;
+    height: 12px;
+    background: rgba(0, 0, 0, 0.057);
+    clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+    position: relative;
+    top: -12px;
+    left: 15px;
+}
+.categories-options-list{
+    padding: 4px;
+}
+.categories-option{
+    list-style: none;
+    margin: 8px auto;
+    cursor: pointer;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.196);
+}
