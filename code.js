@@ -1,18 +1,126 @@
 //https://fakeapi.platzi.com/doc/products
 //fake api de platzi para usarla
 
+class cartItem{
+    constructor(img,title,amount,total,id){
+        this.img = img,
+        this.title = title,
+        this.amount = amount,
+        this.total = total,
+        this.id = id
+    }
+    amountIncrement(){
+        this.amount++
+    }
+}
+
+
+//Variables
+
+
 const productsContainer = document.querySelector('.products-container');
 const nabvar = document.querySelector('.navbar');
+const cartContainer = document.querySelector('.cart-container');
 let productsList = [];
 let categoriesList = [];
+let productsInCart = [];
+
+
+//functions calls
+
+
 
 showProducts();
+renderCart();
+
+
+//Events
+
 
 
 nabvar.addEventListener('click',showMenu);
+productsContainer.addEventListener('click',productsContainerClick)
 
 
+//Functions
 
+
+//detects click add to cart button
+function productsContainerClick(e){
+    e.target.classList.contains('card-cartBtn') ? addToCart(e.target) : "";
+
+}
+
+
+//render cart
+function renderCart(){ 
+    clearContainer(cartContainer);
+
+    productsInCart.forEach(item => {
+        let {img,title,amount,total} = item;
+        renderCartElement(img,title,amount,total);
+    })
+}
+
+
+//render item for cart
+function renderCartElement(image,title,amount,total){
+
+    let itemCard = document.createElement('div');
+    itemCard.classList.add('item');
+
+    let itemImg = document.createElement('img');
+    itemImg.classList.add('item-img');
+    itemImg.src = image;
+
+    let itemTitle = document.createElement('span');
+    itemTitle.classList.add('item-title');
+    itemTitle.textContent = title;
+
+    let itemAmount = document.createElement('item-amount');
+    itemAmount.classList.add('item-amount');
+    itemAmount.textContent = amount;
+
+    let itemTotal = document.createElement('item-total');
+    itemTotal.classList.add('item-total');
+    itemTotal.textContent = total;
+
+    let itemDelete = document.createElement('a');
+    itemDelete.classList.add('delete');
+    itemDelete.textContent = 'X';
+
+    itemCard.append(itemImg,itemTitle,itemAmount,itemTotal,itemDelete);
+    cartContainer.append(itemCard);
+
+}
+
+
+//add product to productsInCart array
+function addToCart(element){
+    let itemId = element.parentElement.parentElement.getAttribute('card-id');
+    
+    //return product info from productList arrray
+    let item = productsList.filter(product =>{
+        return product.id == itemId;
+    })
+
+    let {images,title,price,id} = item[0];
+
+
+    //check if the item/product already in to array
+    if(productsInCart.filter(producto =>{return producto.id == id}).length == 0){
+        productsInCart.push(new cartItem(images[0],title,1,price,id));
+    }
+    else {
+        productsInCart.forEach(item => item.id == id ? item.amountIncrement() : "");
+    }
+
+    renderCart();
+   
+}
+
+
+//show categories menu
 function showMenu(e){
     if (e.target.classList.contains('navbar-menu-categories')) {
         renderCategoriesMenu();
@@ -45,7 +153,6 @@ async function getCategories (){
 }
 
 
-
 //obtains products from API
 async function getProducts (){
     let url = 'https://api.escuelajs.co/api/v1/products';
@@ -59,6 +166,7 @@ async function getProducts (){
     }
 }
 
+
 //choose 20 random products from productsList to show in main page
 function mainProducts(){
 
@@ -66,16 +174,18 @@ function mainProducts(){
         // let random = Math.floor(Math.random() * (productsList.length - 1 + 1)) + 1;
         let random = randomNumber(1,productsList.length -1);
         let {images, title, description, price, id } = productsList[random];
-        createCard(images[0],title,description,price)
+        createCard(images[0],title,description,price,id)
         console.log(id);
 
     }
 }
 
+
 //render the cards
-function createCard(image,title,description,price){
+function createCard(image,title,description,price,id){
     let cardContainer = document.createElement('div');
     cardContainer.classList.add('card');
+    cardContainer.setAttribute('card-id',id);
 
     let cardFigure = document.createElement('figure');
     cardFigure.classList.add('card-figure');
@@ -121,7 +231,7 @@ function createCard(image,title,description,price){
 }
 
 
-//clear all cards of products container
+//clear a specific container from argument
 function clearContainer(container){
     while(container.hasChildNodes()){
         container.removeChild(container.firstChild);
@@ -138,11 +248,13 @@ function setBanners(){
     banner1Img.src = categoriesList[random].image;
 }
 
+
 //random function
 function randomNumber(min,max){
 
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
 
 //clear categories menu container and render categories menu again
 function renderCategoriesMenu(){
